@@ -1,4 +1,4 @@
-# Actions Service (Sistema de Likes)
+# Actions Service
 
 ## Descripción
 El servicio de likes gestiona la funcionalidad de "me gusta" en álbumes o fotos. Optimiza el cálculo y almacenamiento mediante Redis y genera eventos para notificaciones.
