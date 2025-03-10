@@ -1,7 +1,7 @@
 # Actions Service
 
 ## Descripción
-El servicio de likes gestiona la funcionalidad de "me gusta" en álbumes o fotos. Optimiza el cálculo y almacenamiento mediante Redis y genera eventos para notificaciones.
+El servicio de likes gestiona la funcionalidad de "me gusta" y de "destacados" en álbumes o fotos. Optimiza el cálculo y almacenamiento mediante Redis y genera eventos para notificaciones.
 
 ## Características
 - Registro de likes en álbumes o fotos.
