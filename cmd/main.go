@@ -63,10 +63,10 @@ func main() {
 	// Trip routes
 	api := r.Group("/api/likes")
 	{
-		api.POST("/trip/:id", albumHandler.LikeTrip)
-		api.DELETE("/trip/:id", albumHandler.UnlikeTrip)
+		api.POST("/trip/:id", actionHandler.LikeTrip)
+	//	api.DELETE("/trip/:id", albumHandler.UnlikeTrip)
 	}
-
+/*
 	followApi := r.Group("/api/follows")
 	{
 		followApi.POST("/user/:id", albumHandler.FollowUser)
@@ -89,7 +89,7 @@ func main() {
 		favsApi.POST("/media/:id", albumHandler.LikeMedia)
 		favsApi.DELETE("/media/:id", albumHandler.UnlikeMedia)
 	}
-
+*/
 	// Start server
 	log.Println("Server running on http://localhost:8086")
 	if err := r.Run(":8086"); err != nil {

@@ -6,16 +6,21 @@ import (
 	"gorm.io/gorm"
 )
 
-type AlbumRepository struct {
+type ActionRepository struct {
 	DB *gorm.DB
 }
 
-func (repo *AlbumRepository) CreateAlbum(album models.Album) (any, error) {
-	result := repo.DB.Table("albums.albums").Create(&album)
+func (repo *ActionRepository) CreateAction(action models.Action) (models.Action, error) {
+	result := repo.DB.Table("activity.actions").Create(&action)
+	return action, result.Error
+}
 
-	if result.Error != nil {
-		return nil, result.Error
-	}
+func (repo *ActionRepository) GetActionsByUserID(userID uint) ([]models.Action, error) {
+	var actions []models.Action
+	result := repo.DB.Table("activity.actions").Where("user_id = ?", userID).Find(&actions)
+	return actions, result.Error	
+}
 
-	return album, nil
+func (repo *ActionRepository) LikeTrip(tripIDInt uint, tokenResponse uint) (models.Action, error) {
+	
 }

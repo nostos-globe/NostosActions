@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"main/internal/models"
 	"main/internal/service"
 	"net/http"
 	"strconv"
@@ -9,17 +8,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AlbumController struct {
+type ActionController struct {
 	ActionService  *service.ActionService
 	AuthClient    *service.AuthClient
 	ProfileClient *service.ProfileClient
 }
 
-func (c *AlbumController) CreateAlbum(ctx *gin.Context) {
-	var req struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		Visibility  string `json:"visibility"`
+func (c *ActionController) LikeTrip(ctx *gin.Context) {
+	tripID := ctx.Param("id")
+	tripIDInt, err := strconv.Atoi(tripID)
+	if err!= nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid trip ID"})
+		return
 	}
 
 	tokenCookie, err := ctx.Cookie("auth_token")
@@ -34,19 +34,11 @@ func (c *AlbumController) CreateAlbum(ctx *gin.Context) {
 		return
 	}
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	albumMapper := &models.AlbumMapper{}
-	album := albumMapper.ToAlbum(req, tokenResponse)
-
-	createdAlbum, err := c.AlbumService.CreateAlbum(album)
+	likedTrip, err := c.ActionService.LikeTrip(uint(tripIDInt), tokenResponse)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create trip"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to like trip"})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, createdAlbum)
+	ctx.JSON(http.StatusCreated, likedTrip)
 }
