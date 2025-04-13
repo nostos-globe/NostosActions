@@ -52,7 +52,7 @@ func main() {
 
 	// Initialize controllers
 	actionHandler := &controller.ActionController{
-		ActionService:  actionService,
+		ActionService: actionService,
 		AuthClient:    authClient,
 		ProfileClient: profileClient,
 	}
@@ -64,32 +64,32 @@ func main() {
 	api := r.Group("/api/likes")
 	{
 		api.POST("/trip/:id", actionHandler.LikeTrip)
-	//	api.DELETE("/trip/:id", albumHandler.UnlikeTrip)
+		//	api.DELETE("/trip/:id", albumHandler.UnlikeTrip)
 	}
-/*
-	followApi := r.Group("/api/follows")
-	{
-		followApi.POST("/user/:id", albumHandler.FollowUser)
-		followApi.DELETE("/user/:id", albumHandler.UnfollowUser)
-	}
+	/*
+		followApi := r.Group("/api/follows")
+		{
+			followApi.POST("/user/:id", albumHandler.FollowUser)
+			followApi.DELETE("/user/:id", albumHandler.UnfollowUser)
+		}
 
-	uploadApi := r.Group("/api/uploads")
-	{
-		uploadApi.POST("/media", albumHandler.UploadMedia)
-		uploadApi.DELETE("/media/:id", albumHandler.DeleteMedia)
-		uploadApi.POST("/trip/:id", albumHandler.CreateTrip)
-		uploadApi.DELETE("/trip/:id", albumHandler.DeleteTrip)
-		uploadApi.POST("/album/:id", albumHandler.CreateAlbum)
-		uploadApi.DELETE("/album/:id", albumHandler.DeleteAlbum)
+		uploadApi := r.Group("/api/uploads")
+		{
+			uploadApi.POST("/media", albumHandler.UploadMedia)
+			uploadApi.DELETE("/media/:id", albumHandler.DeleteMedia)
+			uploadApi.POST("/trip/:id", albumHandler.CreateTrip)
+			uploadApi.DELETE("/trip/:id", albumHandler.DeleteTrip)
+			uploadApi.POST("/album/:id", albumHandler.CreateAlbum)
+			uploadApi.DELETE("/album/:id", albumHandler.DeleteAlbum)
 
-	}
-	// Media routes in separate group
-	favsApi := r.Group("/api/favourites")
-	{
-		favsApi.POST("/media/:id", albumHandler.LikeMedia)
-		favsApi.DELETE("/media/:id", albumHandler.UnlikeMedia)
-	}
-*/
+		}
+		// Media routes in separate group
+		favsApi := r.Group("/api/favourites")
+		{
+			favsApi.POST("/media/:id", albumHandler.LikeMedia)
+			favsApi.DELETE("/media/:id", albumHandler.UnlikeMedia)
+		}
+	*/
 	// Start server
 	log.Println("Server running on http://localhost:8086")
 	if err := r.Run(":8086"); err != nil {

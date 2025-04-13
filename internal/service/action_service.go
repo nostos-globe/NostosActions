@@ -7,20 +7,68 @@ import (
 )
 
 type ActionService struct {
-    ActionRepo *db.ActionRepository
+	ActionRepo *db.ActionRepository
 }
 
-func (s *ActionService) LikeTrip(tripIDInt uint, tokenResponse uint) (models.Action, error) {
+func (s *ActionService) CreateAction(action models.Action) (models.Action, error) {
+
+	result, err := s.ActionRepo.CreateAction(action)
+	if err != nil {
+		return models.Action{}, err
+	}
+	return result, nil
+}
+
+func (s *ActionService) LikeTrip(userID uint, targetID uint) (models.Like, error) {
+	like := models.Like{
+		SourceID:   userID,
+		TargetID:   targetID,
+		TargetType: "trip",
+	}
+	result, err := s.ActionRepo.LikeTrip(like)
+	if err != nil {
+		return models.Like{}, err
+	}
+
 	action := models.Action{
-		TargetID: tripIDInt,
-		UserID: tokenResponse,
+		TargetID:   targetID,
+		UserID:     userID,
 		ActionType: "like",
 		TargetType: "trip",
 		ActionDate: time.Now(),
 	}
-	result, err := s.ActionRepo.CreateAction(action)
+
+	_, err = s.ActionRepo.CreateAction(action)
 	if err != nil {
-		return models.Action{}, err	
+		return models.Like{}, err
 	}
+
+	return result, nil
+}
+
+func (s *ActionService) UnlikeTrip(userID uint, targetID uint) (models.Like, error) {
+	like := models.Like{
+		SourceID:   userID,
+		TargetID:   targetID,
+		TargetType: "trip",
+	}
+	result, err := s.ActionRepo.UnlikeTrip(like)
+	if err != nil {
+		return models.Like{}, err
+	}
+
+	action := models.Action{
+		TargetID:   targetID,
+		UserID:     userID,
+		ActionType: "unlike",
+		TargetType: "trip",
+		ActionDate: time.Now(),
+	}
+
+	_, err = s.ActionRepo.CreateAction(action)
+	if err != nil {
+		return models.Like{}, err
+	}
+
 	return result, nil
 }
