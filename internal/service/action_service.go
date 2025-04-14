@@ -72,3 +72,64 @@ func (s *ActionService) UnlikeTrip(userID uint, targetID uint) (models.Like, err
 
 	return result, nil
 }
+
+func (s *ActionService) FavMedia(userID uint, targetID uint) (models.Like, error) {
+	fav := models.Like{
+		SourceID:   userID,
+		TargetID:   targetID,
+		TargetType: "media",
+	}
+	result, err := s.ActionRepo.FavMedia(fav)
+	if err != nil {
+		return models.Like{}, err
+	}
+
+	action := models.Action{
+		TargetID:   targetID,
+		UserID:     userID,
+		ActionType: "favourite",
+		TargetType: "media",
+		ActionDate: time.Now(),
+	}
+	_, err = s.ActionRepo.CreateAction(action)
+	if err != nil {
+		return models.Like{}, err
+	}
+
+	return result, nil
+}
+
+func (s *ActionService) UnFavMedia(userID uint, targetID uint) (models.Like, error) {
+	fav := models.Like{
+		SourceID:   userID,
+		TargetID:   targetID,
+		TargetType: "media",
+	}
+	result, err := s.ActionRepo.UnFavMedia(fav)
+	if err != nil {
+		return models.Like{}, err
+	}
+
+	action := models.Action{
+		TargetID:   targetID,
+		UserID:     userID,
+		ActionType: "unfavourite",
+		TargetType: "media",
+		ActionDate: time.Now(),
+	}
+	_, err = s.ActionRepo.CreateAction(action)
+	if err != nil {
+		return models.Like{}, err
+	}
+
+	return result, nil
+}
+
+func (s *ActionService) GetTripLikes(tripID uint) ([]models.Like, error) {
+	result, err := s.ActionRepo.GetTripLikes(tripID)
+	if err != nil {
+		return []models.Like{}, err
+	}
+
+	return result, nil
+}

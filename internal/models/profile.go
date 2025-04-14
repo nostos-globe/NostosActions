@@ -20,3 +20,10 @@ type Profile struct {
 	UpdatedAt       *time.Time `gorm:"type:timestamp;default:current_timestamp"`
 	CreatedAt       *time.Time `gorm:"type:timestamp;default:current_timestamp"`
 }
+
+type LikeProfile struct {
+	ProfileID      uint    `json:"ProfileID"`
+	UserID         uint    `json:"UserID"`
+	ProfilePicture *string `json:"ProfilePicture"`
+	Username       string  `json:"username"`
+}

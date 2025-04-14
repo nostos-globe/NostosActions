@@ -31,8 +31,24 @@ func (repo *ActionRepository) UnlikeTrip(like models.Like) (models.Like, error) 
 	return like, result.Error
 }
 
+func (repo *ActionRepository) FavMedia(fav models.Like) (models.Like, error) {
+	result := repo.DB.Table("activity.likes").Create(&fav)
+	return fav, result.Error
+}
+
+func (repo *ActionRepository) UnFavMedia(fav models.Like) (models.Like, error) {
+	result := repo.DB.Table("activity.likes").Where("source_id =? AND target_id =? AND target_type =?", fav.SourceID, fav.TargetID, fav.TargetType).Delete(&fav)
+	return fav, result.Error
+}
+
 func (repo *ActionRepository) FindLike(like models.Like) (models.Like, error) {
 	var foundLike models.Like
 	result := repo.DB.Table("activity.likes").Where("source_id = ? AND target_id = ? AND target_type = ?", like.SourceID, like.TargetID, like.TargetType).First(&foundLike)
 	return foundLike, result.Error
+}
+
+func (repo *ActionRepository) GetTripLikes(tripID uint) ([]models.Like, error) {
+	var likes []models.Like
+	result := repo.DB.Table("activity.likes").Where("target_id =? AND target_type =?", tripID, "trip").Find(&likes)
+	return likes, result.Error
 }

@@ -34,8 +34,7 @@ func (c *ActionController) LikeTrip(ctx *gin.Context) {
 		return
 	}
 
-	likedTrip, err := c.ActionService.LikeTrip(uint(tripIDInt), tokenResponse)
-
+	likedTrip, err := c.ActionService.LikeTrip(tokenResponse, uint(tripIDInt))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to like trip"})
 		return
@@ -64,11 +63,105 @@ func (c *ActionController) UnlikeTrip(ctx *gin.Context) {
 		return
 	}
 
-	unlikedTrip, err := c.ActionService.UnlikeTrip(uint(tripIDInt), tokenResponse)
+	unlikedTrip, err := c.ActionService.UnlikeTrip(tokenResponse, uint(tripIDInt))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to unlike trip"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to unlike " + unlikedTrip.TargetType})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, unlikedTrip)
+	ctx.JSON(http.StatusOK, gin.H{"message": "trip unliked successfully"})
+}
+
+func (c *ActionController) FavMedia(ctx *gin.Context) {
+	mediaID := ctx.Param("id")
+	mediaIDInt, err := strconv.Atoi(mediaID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid media ID"})
+		return
+	}
+
+	tokenCookie, err := ctx.Cookie("auth_token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
+		return
+	}
+
+	tokenResponse, err := c.AuthClient.GetUserID(tokenCookie)
+	if err != nil || tokenResponse == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to find this user"})
+		return
+	}
+
+	favMedia, err := c.ActionService.FavMedia(tokenResponse, uint(mediaIDInt))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fav media"})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, favMedia)
+}
+
+func (c *ActionController) UnFavMedia(ctx *gin.Context) {
+	mediaID := ctx.Param("id")
+	mediaIDInt, err := strconv.Atoi(mediaID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid media ID"})
+		return
+	}
+
+	tokenCookie, err := ctx.Cookie("auth_token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
+		return
+	}
+
+	tokenResponse, err := c.AuthClient.GetUserID(tokenCookie)
+	if err != nil || tokenResponse == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to find this user"})
+		return
+	}
+
+	unFavMedia, err := c.ActionService.UnFavMedia(tokenResponse, uint(mediaIDInt))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to unFav " + unFavMedia.TargetType})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "media unFav successfully"})
+}
+
+func (c *ActionController) GetTripLikes(ctx *gin.Context) {
+	tripID := ctx.Param("id")
+	tripIDInt, err := strconv.Atoi(tripID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid trip ID"})
+		return
+	}
+
+	tokenCookie, err := ctx.Cookie("auth_token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
+		return
+	}
+
+	likes, err := c.ActionService.GetTripLikes(uint(tripIDInt))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get trip likes"})
+		return
+	}
+
+	var profiles []interface{}
+	for _, like := range likes {
+		profile, err := c.ProfileClient.GetProfile(tokenCookie, like.SourceID)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get user"})
+			return
+		}
+		profiles = append(profiles, profile)
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"total_likes": len(likes),
+		"profiles":    profiles,
+	})
 }

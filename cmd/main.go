@@ -64,7 +64,8 @@ func main() {
 	api := r.Group("/api/likes")
 	{
 		api.POST("/trip/:id", actionHandler.LikeTrip)
-		//	api.DELETE("/trip/:id", albumHandler.UnlikeTrip)
+		api.DELETE("/trip/:id", actionHandler.UnlikeTrip)
+		api.GET("/trip/:id", actionHandler.GetTripLikes)
 	}
 	/*
 		followApi := r.Group("/api/follows")
@@ -83,13 +84,14 @@ func main() {
 			uploadApi.DELETE("/album/:id", albumHandler.DeleteAlbum)
 
 		}
-		// Media routes in separate group
-		favsApi := r.Group("/api/favourites")
-		{
-			favsApi.POST("/media/:id", albumHandler.LikeMedia)
-			favsApi.DELETE("/media/:id", albumHandler.UnlikeMedia)
-		}
 	*/
+	// Media routes in separate group
+	favsApi := r.Group("/api/favourites")
+	{
+		favsApi.POST("/media/:id", actionHandler.FavMedia)
+		favsApi.DELETE("/media/:id", actionHandler.UnFavMedia)
+	}
+
 	// Start server
 	log.Println("Server running on http://localhost:8086")
 	if err := r.Run(":8086"); err != nil {

@@ -26,14 +26,14 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
-		DBHost:            "localhost",
+		DBHost:            "192.168.1.41",
 		DBUser:            os.Getenv("DB_USER"),
 		DBPassword:        os.Getenv("DB_PASSWORD"),
 		DBName:            os.Getenv("DB_NAME"),
 		DBPort:            os.Getenv("DB_PORT"),
 		JWTSecret:         os.Getenv("JWT_SECRET"),
 		AuthServiceUrl:    os.Getenv("AUTH_SERVICE_URL"),
-		ProfileServiceUrl: os.Getenv("PROFILE_SERVICE_URL"),
+		ProfileServiceUrl: "http://localhost:8083",
 		TripsServiceUrl:   "http://localhost:8084",
 	}
 }
