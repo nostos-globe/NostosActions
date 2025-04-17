@@ -125,10 +125,59 @@ func (s *ActionService) UnFavMedia(userID uint, targetID uint) (models.Like, err
 	return result, nil
 }
 
+func (s *ActionService) IsMediaFavorite(userID uint, targetID uint) (bool, error) {
+	fav := models.Like{
+		SourceID:   userID,
+		TargetID:   targetID,
+		TargetType: "media",
+	}	
+
+	result, err := s.ActionRepo.IsMediaFavorite(fav)
+	if err != nil {
+		return false, err
+	}
+
+	return result, nil
+}
+
 func (s *ActionService) GetTripLikes(tripID uint) ([]models.Like, error) {
 	result, err := s.ActionRepo.GetTripLikes(tripID)
 	if err != nil {
 		return []models.Like{}, err
+	}
+
+	return result, nil
+}
+
+func (s *ActionService) FollowUser(userID uint, targetID uint) (models.Action, error) {
+	action := models.Action{
+		TargetID:   targetID,
+		UserID:     userID,
+		ActionType: "follow",
+		TargetType: "user",
+		ActionDate: time.Now(),
+	}
+
+	result, err := s.CreateAction(action)
+	if err != nil {
+		return models.Action{}, err
+	}
+
+	return result, nil
+}
+
+func (s *ActionService) UnFollowUser(userID uint, targetID uint) (models.Action, error) {
+	action := models.Action{
+		TargetID:   targetID,
+		UserID:     userID,
+		ActionType: "unfollow",
+		TargetType: "user",
+		ActionDate: time.Now(),
+	}
+
+	result, err := s.CreateAction(action)
+	if err != nil {
+		return models.Action{}, err
 	}
 
 	return result, nil

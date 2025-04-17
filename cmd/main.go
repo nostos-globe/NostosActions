@@ -67,27 +67,16 @@ func main() {
 		api.DELETE("/trip/:id", actionHandler.UnlikeTrip)
 		api.GET("/trip/:id", actionHandler.GetTripLikes)
 	}
-	/*
-		followApi := r.Group("/api/follows")
-		{
-			followApi.POST("/user/:id", albumHandler.FollowUser)
-			followApi.DELETE("/user/:id", albumHandler.UnfollowUser)
-		}
 
-		uploadApi := r.Group("/api/uploads")
-		{
-			uploadApi.POST("/media", albumHandler.UploadMedia)
-			uploadApi.DELETE("/media/:id", albumHandler.DeleteMedia)
-			uploadApi.POST("/trip/:id", albumHandler.CreateTrip)
-			uploadApi.DELETE("/trip/:id", albumHandler.DeleteTrip)
-			uploadApi.POST("/album/:id", albumHandler.CreateAlbum)
-			uploadApi.DELETE("/album/:id", albumHandler.DeleteAlbum)
+	followApi := r.Group("/api/actions")
+	{
+		followApi.POST("/create", actionHandler.CreateAction)
+	}
 
-		}
-	*/
 	// Media routes in separate group
 	favsApi := r.Group("/api/favourites")
 	{
+		favsApi.GET("/media/:id", actionHandler.GetMediaStatus)
 		favsApi.POST("/media/:id", actionHandler.FavMedia)
 		favsApi.DELETE("/media/:id", actionHandler.UnFavMedia)
 	}

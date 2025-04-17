@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"main/internal/models"
 	"main/internal/service"
 	"net/http"
 	"strconv"
@@ -164,4 +165,61 @@ func (c *ActionController) GetTripLikes(ctx *gin.Context) {
 		"total_likes": len(likes),
 		"profiles":    profiles,
 	})
+}
+
+func (c *ActionController) GetMediaStatus(ctx *gin.Context) {
+	mediaID := ctx.Param("id")
+	mediaIDInt, err := strconv.Atoi(mediaID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid media ID"})
+		return
+	}
+
+	tokenCookie, err := ctx.Cookie("auth_token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
+		return
+	}
+
+	tokenResponse, err := c.AuthClient.GetUserID(tokenCookie)
+	if err != nil || tokenResponse == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to find this user"})
+		return
+	}
+
+	isFavorite, err := c.ActionService.IsMediaFavorite(tokenResponse, uint(mediaIDInt))
+	if err != nil {
+		isFavorite = false
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"is_favourite": isFavorite})
+}
+
+func (c *ActionController) CreateAction(ctx *gin.Context) {
+	var action models.Action
+	if err := ctx.ShouldBindJSON(&action); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid action data"})
+		return
+	}
+
+	tokenCookie, err := ctx.Cookie("auth_token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
+		return
+	}
+
+	tokenResponse, err := c.AuthClient.GetUserID(tokenCookie)
+	if err != nil || tokenResponse == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to find this user"})
+		return
+	}
+
+	action.UserID = tokenResponse
+	createdAction, err := c.ActionService.CreateAction(action)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create action"})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, createdAction)
 }

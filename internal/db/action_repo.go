@@ -52,3 +52,12 @@ func (repo *ActionRepository) GetTripLikes(tripID uint) ([]models.Like, error) {
 	result := repo.DB.Table("activity.likes").Where("target_id =? AND target_type =?", tripID, "trip").Find(&likes)
 	return likes, result.Error
 }
+
+func (repo *ActionRepository) IsMediaFavorite(fav models.Like) (bool, error) {
+	var foundLike models.Like
+	result := repo.DB.Table("activity.likes").Where("source_id =? AND target_id =? AND target_type =?", fav.SourceID, fav.TargetID, fav.TargetType).First(&foundLike)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return true, nil
+}
