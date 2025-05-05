@@ -182,3 +182,12 @@ func (s *ActionService) UnFollowUser(userID uint, targetID uint) (models.Action,
 
 	return result, nil
 }
+
+func (s *ActionService) GetMyLikes(userID uint) ([]models.Like, error) {
+	likes, err := s.ActionRepo.GetMyTripLikes(userID)
+	if err != nil {
+		return []models.Like{}, err
+	}
+	return likes, nil
+}
+

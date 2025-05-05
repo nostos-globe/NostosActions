@@ -223,3 +223,27 @@ func (c *ActionController) CreateAction(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, createdAction)
 }
+
+func (c *ActionController) GetMyLikes(ctx *gin.Context) {
+    tokenCookie, err := ctx.Cookie("auth_token")
+    if err != nil {
+        ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
+        return
+    }
+
+    userID, err := c.AuthClient.GetUserID(tokenCookie)
+    if err != nil || userID == 0 {
+        ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to find this user"})
+        return
+    }
+
+    likes, err := c.ActionService.GetMyLikes(userID)
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get likes"})
+        return
+    }
+
+    ctx.JSON(http.StatusOK, gin.H{
+        "likes": likes,
+    })
+}
