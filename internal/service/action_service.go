@@ -130,7 +130,7 @@ func (s *ActionService) IsMediaFavorite(userID uint, targetID uint) (bool, error
 		SourceID:   userID,
 		TargetID:   targetID,
 		TargetType: "media",
-	}	
+	}
 
 	result, err := s.ActionRepo.IsMediaFavorite(fav)
 	if err != nil {
@@ -183,11 +183,10 @@ func (s *ActionService) UnFollowUser(userID uint, targetID uint) (models.Action,
 	return result, nil
 }
 
-func (s *ActionService) GetMyLikes(userID uint) ([]models.Like, error) {
-	likes, err := s.ActionRepo.GetMyTripLikes(userID)
+func (s *ActionService) GetLikesByUserID(userID uint) ([]models.Like, error) {
+	likes, err := s.ActionRepo.GetLikesByUserID(userID)
 	if err != nil {
 		return []models.Like{}, err
 	}
 	return likes, nil
 }
-

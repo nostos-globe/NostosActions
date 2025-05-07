@@ -53,7 +53,7 @@ func (repo *ActionRepository) GetTripLikes(tripID uint) ([]models.Like, error) {
 	return likes, result.Error
 }
 
-func (repo *ActionRepository) GetMyTripLikes(userID uint) ([]models.Like, error) {
+func (repo *ActionRepository) GetLikesByUserID(userID uint) ([]models.Like, error) {
 	var likes []models.Like
 	result := repo.DB.Table("activity.likes").Where("source_id = ? AND target_type =?", userID, "trip").Find(&likes)
 	return likes, result.Error

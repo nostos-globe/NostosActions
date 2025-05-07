@@ -67,6 +67,7 @@ func main() {
 		api.DELETE("/trip/:id", actionHandler.UnlikeTrip)
 		api.GET("/trip/:id", actionHandler.GetTripLikes)
 		api.GET("/myLikes", actionHandler.GetMyLikes)
+		api.GET("/userID/:id", actionHandler.GetLikesByUserID)
 	}
 
 	followApi := r.Group("/api/actions")

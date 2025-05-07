@@ -225,25 +225,56 @@ func (c *ActionController) CreateAction(ctx *gin.Context) {
 }
 
 func (c *ActionController) GetMyLikes(ctx *gin.Context) {
-    tokenCookie, err := ctx.Cookie("auth_token")
-    if err != nil {
-        ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
-        return
-    }
+	tokenCookie, err := ctx.Cookie("auth_token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
+		return
+	}
 
-    userID, err := c.AuthClient.GetUserID(tokenCookie)
-    if err != nil || userID == 0 {
-        ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to find this user"})
-        return
-    }
+	userID, err := c.AuthClient.GetUserID(tokenCookie)
+	if err != nil || userID == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to find this user"})
+		return
+	}
 
-    likes, err := c.ActionService.GetMyLikes(userID)
-    if err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get likes"})
-        return
-    }
+	likes, err := c.ActionService.GetLikesByUserID(userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get likes"})
+		return
+	}
 
-    ctx.JSON(http.StatusOK, gin.H{
-        "likes": likes,
-    })
+	ctx.JSON(http.StatusOK, gin.H{
+		"likes": likes,
+	})
+}
+
+func (c *ActionController) GetLikesByUserID(ctx *gin.Context) {
+	tokenCookie, err := ctx.Cookie("auth_token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
+		return
+	}
+
+	askerID, err := c.AuthClient.GetUserID(tokenCookie)
+	if err != nil || askerID == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to find this user"})
+		return
+	}
+
+	userIDStr := ctx.Param("id")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
+		return
+	}
+
+	likes, err := c.ActionService.GetLikesByUserID(uint(userID))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get likes"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"likes": likes,
+	})
 }
