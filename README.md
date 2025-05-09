@@ -82,4 +82,16 @@ The Actions Service integrates with:
 - **Performance**: Redis used for optimizing high-traffic operations  
 
 ---
+## Endpoints
 
+| Method | Route                    | Description                                    |
+|--------|-------------------------|------------------------------------------------|
+| POST   | /api/likes/trip/:id     | Like a trip                                   |
+| DELETE | /api/likes/trip/:id     | Unlike a trip                                 |
+| GET    | /api/likes/trip/:id     | Get likes for a specific trip                 |
+| GET    | /api/likes/myLikes      | Get all likes for current user                |
+| GET    | /api/likes/userID/:id   | Get all likes for a specific user             |
+| POST   | /api/actions/create     | Create a new action                           |
+| GET    | /api/favourites/media/:id| Get favorite status for media                |
+| POST   | /api/favourites/media/:id| Mark media as favorite                       |
+| DELETE | /api/favourites/media/:id| Remove media from favorites                  |
