@@ -60,7 +60,6 @@ func main() {
 	// Initialize Gin
 	r := gin.Default()
 
-	// Trip routes
 	api := r.Group("/api/likes")
 	{
 		api.POST("/trip/:id", actionHandler.LikeTrip)
@@ -75,7 +74,6 @@ func main() {
 		followApi.POST("/create", actionHandler.CreateAction)
 	}
 
-	// Media routes in separate group
 	favsApi := r.Group("/api/favourites")
 	{
 		favsApi.GET("/media/:id", actionHandler.GetMediaStatus)
