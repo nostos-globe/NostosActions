@@ -1,97 +1,130 @@
-# Actions Service
+# Nostos Actions Service
 
-## Description
-
-The Nostos Actions Service manages user interactions such as "likes" and "favorites" for albums and media content. It optimizes calculation and storage through Redis caching and generates events for notifications, enhancing the social experience of the platform.
+The **Nostos Actions Service** manages social interactions across the platform, including likes, favorites, and user follows. It ensures a seamless social experience through robust action tracking and integration with authentication and profile services.
 
 ---
 
-## Features
+## 🚀 Features
 
-- Registration of likes on albums, trips, and media content  
-- User favorites functionality for media content  
-- Prevention of duplicate likes by the same user on a single publication  
-- Fast calculation and updating of like counters without database reloading  
-- Redis caching for popular content tracking  
-- Event generation for notifications (`event.like.new`)  
-- User following/unfollowing functionality  
-- Cross-service integration with Profile and Auth services  
-
----
-
-## Technologies Used
-
-- **Language**: Go  
-- **Framework**: Gin  
-- **Database**: PostgreSQL with GORM  
-- **Cache**: Redis  
-- **Authentication**: JWT via Auth Service  
-- **Messaging**: NATS  
-- **Orchestration**: Docker  
+* Like functionality for trips and media
+* User favorites for media content
+* Prevents duplicate likes per user per item
+* Like/favorite counters with efficient database updates
+* Event publishing for notifications (`event.like.new`)
+* Follow/unfollow other users
+* Integrates with Profile and Auth services for identity and access
 
 ---
 
-## Architecture
+## 📌 Endpoints
 
-The service follows a clean architecture pattern with the following components:
+### 🔹 Likes
 
-- **API Controllers**: Handle HTTP requests and responses  
-- **Services**: Implement business logic  
-- **Repositories**: Handle database operations  
-- **Models**: Define data structures  
-- **Clients**: Communicate with other microservices  
+* **Like a Trip**
+  `POST /api/likes/trip/:id`
+  Likes a specific trip.
+
+* **Unlike a Trip**
+  `DELETE /api/likes/trip/:id`
+  Removes like from a trip.
+
+* **Get Likes for a Trip**
+  `GET /api/likes/trip/:id`
+  Retrieves the list of users who liked the trip.
+
+* **My Likes**
+  `GET /api/likes/myLikes`
+  Returns all content liked by the current user.
+
+* **Likes by User ID**
+  `GET /api/likes/userID/:id`
+  Retrieves likes made by a specific user.
+
+### 🔹 Favorites
+
+* **Get Favorite Status (Media)**
+  `GET /api/favourites/media/:id`
+  Checks if the current user has favorited a media item.
+
+* **Add to Favorites**
+  `POST /api/favourites/media/:id`
+  Marks a media item as a favorite.
+
+* **Remove from Favorites**
+  `DELETE /api/favourites/media/:id`
+  Unmarks a media item as a favorite.
+
+### 🔹 User Actions
+
+* **Create Action (e.g. Follow)**
+  `POST /api/actions/create`
+  Records a user action such as following another user.
+
+---
+
+## ⚙️ Installation and Configuration
+
+### Prerequisites
+
+* Go installed
+* PostgreSQL
+* Docker and Docker Compose (for local development)
+* Auth service with JWT support
+
+### Installation
+
+```bash
+git clone https://github.com/nostos-globe/NostosActions.git
+cd NostosActions
+go mod download
+```
+
+### Configuration
+
+Ensure the following environment variables or Vault secrets are set:
+
+* `DATABASE_URL`
+* `JWT_SECRET`
+* `NATS_URL` (for event messaging)
+
+Vault can be accessed using a token, AppRole, or Kubernetes auth.
 
 ---
 
-## Database Schema
+## ▶️ Running the Application
 
-The service uses the following schema in PostgreSQL:
-
-- `activity.likes`: Stores like information  
-- `activity.actions`: Stores user actions (likes, favorites, follows)  
-
----
-
-## Action Features
-
-### Like Management
-
-Users can like and unlike various content types (trips, media) with proper tracking and prevention of duplicates.
-
-### Favorites System
-
-Media content can be marked as favorite by users, allowing them to build personal collections of preferred content.
-
-### User Following
-
-The service manages user follow relationships, enabling social networking features within the platform.
-
-### Cross-Service Integration
-
-The Actions Service integrates with:
-
-- **Profile Service**: To fetch user profiles for action attribution  
-- **Auth Service**: For authentication and authorization  
+```bash
+go run cmd/main.go
+```
 
 ---
 
-## Security
+## 🧱 Technologies Used
 
-- **Authentication**: Implemented using JWT tokens from the Auth Service  
-- **Duplicate Prevention**: Users can't like the same content multiple times  
-- **Performance**: Redis used for optimizing high-traffic operations  
+* **Language**: Go
+* **Framework**: Gin
+* **Database**: PostgreSQL (GORM)
+* **Authentication**: JWT via Auth Service
+* **Messaging**: NATS
+* **Orchestration**: Docker
 
 ---
-## Endpoints
 
-| Method | Route                    | Description                                    |
-|--------|-------------------------|------------------------------------------------|
-| POST   | /api/likes/trip/:id     | Like a trip                                   |
-| DELETE | /api/likes/trip/:id     | Unlike a trip                                 |
-| GET    | /api/likes/trip/:id     | Get likes for a specific trip                 |
-| GET    | /api/likes/myLikes      | Get all likes for current user                |
-| GET    | /api/likes/userID/:id   | Get all likes for a specific user             |
-| POST   | /api/actions/create     | Create a new action                           |
-| GET    | /api/favourites/media/:id| Get favorite status for media                |
-| POST   | /api/favourites/media/:id| Mark media as favorite                       |
-| DELETE | /api/favourites/media/:id| Remove media from favorites                  |
+## 🏗️ Project Structure
+
+```
+NostosActions/
+├── cmd/                  # Application entry point
+│   └── main.go
+├── internal/
+│   ├── api/              # HTTP route handlers
+│   ├── db/               # Database access logic
+│   ├── models/           # Data models
+│   └── service/          # Business logic
+├── pkg/
+│   ├── config/           # Config and secret management
+│   └── messaging/        # NATS event publishing
+├── Dockerfile
+├── go.mod
+└── README.md
+```
