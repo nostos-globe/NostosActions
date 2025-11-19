@@ -2,12 +2,14 @@ package service
 
 import (
 	"main/internal/db"
+	"main/internal/events"
 	"main/internal/models"
 	"time"
 )
 
 type ActionService struct {
 	ActionRepo *db.ActionRepository
+	Events     *events.Publisher
 }
 
 func (s *ActionService) CreateAction(action models.Action) (models.Action, error) {
@@ -41,6 +43,16 @@ func (s *ActionService) LikeTrip(userID uint, targetID uint) (models.Like, error
 	_, err = s.ActionRepo.CreateAction(action)
 	if err != nil {
 		return models.Like{}, err
+	}
+
+	if s.Events != nil {
+		event := events.ContentLikedEvent{
+			SourceID:   userID,
+			TargetID:   targetID,
+			TargetType: "trip",
+			CreatedAt:  time.Now(),
+		}
+		_ = s.Events.Publish("content.liked", event)
 	}
 
 	return result, nil
@@ -94,6 +106,16 @@ func (s *ActionService) FavMedia(userID uint, targetID uint) (models.Like, error
 	_, err = s.ActionRepo.CreateAction(action)
 	if err != nil {
 		return models.Like{}, err
+	}
+
+	if s.Events != nil {
+		event := events.ContentLikedEvent{
+			SourceID:   userID,
+			TargetID:   targetID,
+			TargetType: "media",
+			CreatedAt:  time.Now(),
+		}
+		_ = s.Events.Publish("content.favourited", event)
 	}
 
 	return result, nil
@@ -161,6 +183,15 @@ func (s *ActionService) FollowUser(userID uint, targetID uint) (models.Action, e
 	result, err := s.CreateAction(action)
 	if err != nil {
 		return models.Action{}, err
+	}
+
+	if s.Events != nil {
+		event := events.UserFollowedEvent{
+			FollowerID: userID,
+			FollowedID: targetID,
+			CreatedAt:  time.Now(),
+		}
+		_ = s.Events.Publish("user.followed", event)
 	}
 
 	return result, nil

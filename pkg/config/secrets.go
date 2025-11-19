@@ -46,6 +46,7 @@ func (sm *SecretsManager) LoadSecrets() map[string]string {
 		"AUTH_SERVICE_URL",
 		"PROFILE_SERVICE_URL",
 		"TRIPS_SERVICE_URL",
+		"NATS_URL",
 	}
 	log.Printf("Attempting to load %d secrets", len(secretKeys))
 

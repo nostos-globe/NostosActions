@@ -17,6 +17,7 @@ type Config struct {
 	AuthServiceUrl    string
 	ProfileServiceUrl string
 	TripsServiceUrl   string
+	NATS_URL          string
 }
 
 func LoadConfig() *Config {
@@ -35,5 +36,6 @@ func LoadConfig() *Config {
 		AuthServiceUrl:    os.Getenv("AUTH_SERVICE_URL"),
 		ProfileServiceUrl: os.Getenv("PROFILE_SERVICE_URL"),
 		TripsServiceUrl:   os.Getenv("TRIPS_SERVICE_URL"),
+		NATS_URL:          os.Getenv("NATS_URL"),
 	}
 }

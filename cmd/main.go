@@ -6,9 +6,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/nats-io/nats.go"
 
 	controller "main/internal/api"
 	dbRepo "main/internal/db"
+	"main/internal/events"
 	"main/internal/service"
 	"main/pkg/config"
 	"main/pkg/db"
@@ -33,6 +35,10 @@ func init() {
 func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
+	nc, err := nats.Connect(os.Getenv("NATS_URL"))
+	if err != nil {
+		log.Fatal("Error conectando a NATS:", err)
+	}
 
 	// Connect to database
 	database, err := db.ConnectDB(cfg)
@@ -46,9 +52,10 @@ func main() {
 	// Initialize clients for external apis
 	authClient := &service.AuthClient{BaseURL: cfg.AuthServiceUrl}
 	profileClient := &service.ProfileClient{BaseURL: cfg.ProfileServiceUrl}
+	publisher := events.NewPublisher(nc)
 
 	// Initialize services
-	actionService := &service.ActionService{ActionRepo: actionRepo}
+	actionService := &service.ActionService{ActionRepo: actionRepo, Events: publisher}
 
 	// Initialize controllers
 	actionHandler := &controller.ActionController{
