@@ -278,3 +278,63 @@ func (c *ActionController) GetLikesByUserID(ctx *gin.Context) {
 		"likes": likes,
 	})
 }
+
+func (c *ActionController) FollowUser(ctx *gin.Context) {
+	var action models.Action
+	if err := ctx.ShouldBindJSON(&action); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid action data"})
+		return
+	}
+
+	tokenCookie, err := ctx.Cookie("auth_token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
+		return
+	}
+
+	tokenResponse, err := c.AuthClient.GetUserID(tokenCookie)
+	if err != nil || tokenResponse == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to find this user"})
+		return
+	}
+
+	action.UserID = tokenResponse
+	createdAction, err := c.ActionService.FollowUser(tokenResponse, action.TargetID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create action"})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, createdAction)
+
+}
+
+func (c *ActionController) UnFollowUser(ctx *gin.Context) {
+	var action models.Action
+	if err := ctx.ShouldBindJSON(&action); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid action data"})
+		return
+	}
+
+	tokenCookie, err := ctx.Cookie("auth_token")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "no token found"})
+		return
+	}
+
+	tokenResponse, err := c.AuthClient.GetUserID(tokenCookie)
+	if err != nil || tokenResponse == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "failed to find this user"})
+		return
+	}
+
+	action.UserID = tokenResponse
+	createdAction, err := c.ActionService.UnFollowUser(tokenResponse, action.TargetID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create action"})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, createdAction)
+
+}

@@ -35,7 +35,7 @@ func init() {
 func main() {
 	// Load configuration
 	cfg := config.LoadConfig()
-	nc, err := nats.Connect(os.Getenv("NATS_URL"))
+	nc, err := nats.Connect(cfg.NATS_URL)
 	if err != nil {
 		log.Fatal("Error conectando a NATS:", err)
 	}
@@ -76,9 +76,10 @@ func main() {
 		api.GET("/userID/:id", actionHandler.GetLikesByUserID)
 	}
 
-	followApi := r.Group("/api/actions")
+	followApi := r.Group("/api/follow")
 	{
-		followApi.POST("/create", actionHandler.CreateAction)
+		followApi.POST("/", actionHandler.FollowUser)
+		followApi.DELETE("/", actionHandler.UnFollowUser)
 	}
 
 	favsApi := r.Group("/api/favourites")
