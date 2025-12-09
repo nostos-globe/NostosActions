@@ -1,5 +1,5 @@
 # Usa la versión de Go compatible con tu proyecto
-FROM golang:1.24 AS builder
+FROM golang:1.25 AS builder
 
 # Define el directorio de trabajo dentro del contenedor
 WORKDIR /app
